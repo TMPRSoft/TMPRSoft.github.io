@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[리뷰] (OneShotCLIP) One-Shot Adaptation of GAN in Just One CLIP"
-date:   2023-01-30 01:40:00 +0900
+date:   2023-01-31 05:07:00 +0900
 categories: GAN
 tags: [GAN, CLIP, Few-Shot Learning]
 use_math: true
