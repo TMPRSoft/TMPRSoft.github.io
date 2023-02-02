@@ -60,7 +60,7 @@ Contribution은 다음과 같이 요약될 수 있음.
 
 * 이러한 성능 저하의 원인을 오직 픽셀별 유사도에만 집중했다는 점으로 추측하여, 이를 바로잡기 위해 pre-train 된 CLIP 모델을 사용하여 생성된 $$I_{ref}$$를 $$I_{trg}$$의 semantic attribute를 따르도록 가이드할 것을 제안함. 더 구체적으로는, 그림 2(좌)처럼, $$I_{ref}$$와 $$I_{trg}$$ 사이에 픽셀별 loss를 사용하면서 두 이미지의 CLIP 공간 임베딩 사이의 cosine 거리를 줄이는 추가 loss를 포함시킴.
 <br/>
-  여기에 $$I_{ref}$$에 대한 증강을 도입하여 artifact를 회피함.
+  여기에 $$I_{ref}$$에 대한 증강(augmentation)을 도입하여 artifact를 회피함.
 
 * 따라서 최적화 문제 식은 다음과 같음.
 <br/>
