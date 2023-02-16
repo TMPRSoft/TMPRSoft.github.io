@@ -32,7 +32,7 @@ Project Page: [Github]
 
 ## Introduction
 
-* PITI로 칭해지는 사전 트레이닝 기반의 I2I 변환은 마스크-이미지(mastk-to-image), 스케치-이미지(sketch-to-image), 기하학-이미지(geometry-to-image) 변환 같은 다양한 downstream task에서 전례 없는 퀄리티를 달성함.
+* PITI로 칭해지는 사전 트레이닝 기반의 I2I 변환은 마스크-이미지(mask-to-image), 스케치-이미지(sketch-to-image), 기하학-이미지(geometry-to-image) 변환 같은 다양한 downstream task에서 전례 없는 퀄리티를 달성함.
 * 그림 1은 뛰어난 품질과 큰 다양성을 나타내는 복잡한 장면의 일부 생성된 이미지 샘플을 보여 줌.
 * ADE20K, COCO-Stuff, DIODE를 포함한 어려운 데이터셋에 대한 광범위한 실험은 사전 트레이닝 없이 모델뿐 아니라 정량적 metric과 주관적 평가 모두에 의해 측정된 본 접근 방식의 상당한 우수성을 보여 줌.
 * 또한 제안된 방법은 few-shot I2I 변환에서 유망한 잠재력을 보여 줌.
@@ -59,7 +59,7 @@ Project Page: [Github]
 <br/><br/>
 * 디노이징에 대한 이미지 생성의 노이즈 감소는 $$\nabla_{x_t}\log p(x_t) \propto \epsilon_\theta (x_t)$$이므로 디노이징 스코어 매칭이나, 데이터 log-likelihood의 간략화된 variational lower bound를 최적화하는 것으로 정당화될 수 있음.
 * 역방향 확산 프로세스를 용이하게 수행하기 위해, 클래스 레이블, 텍스트 프롬프트, 열화된 이미지와 같은 조건 $$\pmb{y}$$를 추가로 제공할 수 있음. 그러면 디노이징 모델은 $$\epsilon_\theta(x_t, \pmb{y}, t)$$가 되고 조건은 input concatenation이나 denormalization, cross-attention을 통해 주입됨.
-* 광범위한 이미지에서의 탁월한 생성 능력으로 인해, 확산 모델은 생성 선행(genrative prior) 역할로서 이상적인 선택이 되고 있음. 아래에서, 대량의 데이터를 사용하여 네트워크를 적절히 사전 트레이닝하고 학습된 지식을 그림 2와 같이 downstream task에 적용하는 방법을 설명함.
+* 광범위한 이미지에서의 탁월한 생성 능력으로 인해, 확산 모델은 생성 선행(generative prior) 역할로서 이상적인 선택이 되고 있음. 아래에서, 대량의 데이터를 사용하여 네트워크를 적절히 사전 트레이닝하고 학습된 지식을 그림 2와 같이 downstream task에 적용하는 방법을 설명함.
 
 ![Fig2](/assets/pretraining-is-all-you-need-for-i2i-translation/fig2.png)
 
@@ -81,12 +81,11 @@ Project Page: [Github]
 * 모델이 사전 트레이닝 되고 나면, 그것을 여러 가지 전략으로 기반 모델과 upsampler 모델을 각각 finetuning 하여 다양한 downstream 이미지 합성 task에 적응시킬 수 있음.
 
 * **기반 모델 finetuning**<br/>
-    * 기반 모델을 사용하는 생성은 $$x_t = \tilde{\mathcal{D}}(\tilde{\mathcal{E}}(x_0, \pmb{y}))$$로 식이 세워질 수 있고, 여기서 $$\tilde{\mathcal{E}}$$와 $$\tilde{\mathcal{D}}$$는 각각 사전 트레이닝 된 인코더와 디코더를 나타내고 $$\pmb{y}$$는 사전 트레이닝에 사용되는 조건임.
-    * 텍스트 이상의 새로운 modality 조건을 수용하기 위해, task 특정 head $$\mathcal{E}_i$$를 트레이닝 하여 조건부 인풋을 사전 트레이닝 된 임베딩 공간에 매핑함. 인풋이 충실하게 projection 될 수 있다면, 사전 트레이닝 된 디코더는 그럴 듯한 아웃풋을 생산할 것임.
-
-* 2단계 finetuning scheme을 제안함. 첫 단계에서, 특히 task 특정 인코더를 트레이닝하고 사전 트레이닝 된 디코더는 그대로 둠. 이 단계에서 아웃풋은 인풋의 semantic과 대강 매치될 것이지만, 정확한 공간적 정렬은 되어 있지 않음.
-* 그 다음 인코더와 디코더를 같이 finetuning 함. 이 다음, 공간적 semantic 정렬을 훨씬 개선하게 됨.
-* 이러한 단계별 트레이닝은 사전 트레이닝 된 지식을 가능한 많이 구축하는 데 도움이 되고 품질을 훨씬 개선하는 데에 중요한 것으로 입증됨.
+    * 기반 모델을 사용하는 생성은 $$\pmb{x}_t = \tilde{\mathcal{D}}(\tilde{\mathcal{E}}(\pmb{x}_0, \pmb{y}))$$로 식이 세워질 수 있고, 여기서 $$\tilde{\mathcal{E}}$$와 $$\tilde{\mathcal{D}}$$는 각각 사전 트레이닝 된 인코더와 디코더를 나타내고 $$\pmb{y}$$는 사전 트레이닝에 사용되는 조건임.
+    * 텍스트를 넘어서는 새로운 modality 조건을 수용하기 위해, task 특정 head $$\mathcal{E}_i$$를 트레이닝 하여 조건부 인풋을 사전 트레이닝 된 임베딩 공간에 매핑함. 인풋이 충실하게 projection 될 수 있다면, 사전 트레이닝 된 디코더는 그럴 듯한 아웃풋을 생산할 것임.
+    * 2단계 finetuning scheme을 제안함. 첫 단계에서, 특히 task 특정 인코더를 트레이닝하고 사전 트레이닝 된 디코더는 그대로 둠. 이 단계에서 아웃풋은 인풋의 semantic과 대강 매치될 것이지만, 정확한 공간적 정렬은 되어 있지 않음.
+    * 그 다음 인코더와 디코더를 같이 finetuning 함. 이 다음, 공간적 semantic 정렬을 훨씬 개선하게 됨.
+    * 이러한 단계별 트레이닝은 사전 트레이닝 된 지식을 가능한 많이 구축하는 데 도움이 되고 품질을 훨씬 개선하는 데에 중요한 것으로 입증됨.
 
 * **적대적 확산 upsampler**<br/>
     * 고해상도 생성을 위해 확산 upsampler를 더욱 finetuning 함. 트레이닝 이미지와 기반 모델의 샘플들 사이의 격차를 줄이기 위해 random degradation, 특히 real-world BSR degradation을 적용함.

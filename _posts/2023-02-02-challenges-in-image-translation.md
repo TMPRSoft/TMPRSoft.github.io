@@ -2,7 +2,7 @@
 layout: post
 title:  "[ChatGPT에게 물었다] Cross-domain image translation의 난관은?"
 date:   2023-02-02 05:11:00 +0900
-categories: ChatGPT's Answers
+categories: [ChatGPT's Answers]
 tags: [ChatGPT]
 ---
 
