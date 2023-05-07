@@ -3,7 +3,7 @@ layout: post
 title:  "[ChatGPT에게 물었다] 리뷰어가 내 논문에서 제안한 기법의 성능이 별로 뛰어나지 않아 보인다고 평가했다면?"
 date:   2023-05-07 21:06:00 +0900
 categories: [ChatGPT's Answers]
-tags: [ChatGPT, Diffusion Model]
+tags: [ChatGPT, Writing Paper]
 use_math: true
 ---
 
