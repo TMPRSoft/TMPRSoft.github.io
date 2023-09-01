@@ -29,7 +29,7 @@ Project Page: [Github]
 * 본 논문에서는 원본 얼굴 도메인과 확장된 초상화 영역의 이중 스타일을 유연하게 제어하는 새로운 **DualStyleGAN**을 도입하여, 보다 도전적인 예시 기반 고해상도 초상화 스타일 전이를 탐구함.
 * StyleGAN과는 달리, DualStyleGAN은 **고유한 스타일 경로**와 새로운 **외부 스타일 경로**로 초상화의 내용과 스타일을 각각 특성화함으로써 자연스러운 스타일 전이 방법을 제공함.
 * 섬세하게 설계된 외부 스타일 경로를 통해 모델은 스타일 예제를 정확하게 붙여넣기 위해 색상과 복잡한 구조 스타일을 모두 계층적으로 변조할 수 있음.
-* 또한 네트워크 아키텍처에서 위와 같은 수정 사항에도 불구하고 모델의 생성 공간을 타깃 도메인으로 원활하게 변환하기 위해 새로운 점진적 미세 조정 체계가 도입됨.
+* 또한 네트워크 아키텍처에서 위와 같은 수정 사항에도 불구하고 모델의 생성 공간을 타깃 도메인으로 원활하게 변환하기 위해 새로운 점진적 fine-tuning 체계가 도입됨.
 * 실험은 고품질 초상화 스타일 전이와 유연한 스타일 제어에서 SotA 기법에 비해 DualStyleGAN의 우수성을 입증함.
 
 <div id="Sec1"></div>
@@ -60,7 +60,7 @@ Project Page: [Github]
 그림 2. StyleGAN에 대한 무조건부 fine-tuning과 DualStyleGAN에 대한 조건부 fine-tuning의 비교.
 
 * 목표는 사전 트레이닝된 StyleGAN을 기반으로 DualStyleGAN을 구축하는 것이며, 이는 새로운 도메인으로 전환되어 원래 도메인과 확장된 도메인의 스타일을 모두 특성화할 수 있음.
-* 무조건적인 미세 조정은 [그림 2](#Fig2)와 같이 StyleGAN 생성 공간을 전체적으로 변환하여 캡처된 스타일의 다양성을 잃게 함.
+* 무조건적인 fine-tuning은 [그림 2](#Fig2)와 같이 StyleGAN 생성 공간을 전체적으로 변환하여 캡처된 스타일의 다양성을 잃게 함.
 * 본 핵심 아이디어는 다양한 스타일을 학습하기 위해 유효한 지도(supervision)를 모색하는 것과([Sec. 3.1](#Sec3.1)), 두 가지 개별 스타일 경로로 두 종류의 스타일을 명시적으로 모델링하는 것임([Sec. 3.2](#Sec3.2)).
 * 그리고 강력한 조건부 fine-tuning을 위한 원칙 있는 점진적 전략으로 DualStyleGAN을 트레이닝함([Sec. 3.3](#Sec3.3)).
 
@@ -78,7 +78,7 @@ Project Page: [Github]
     * 이 문제를 해결하기 위해, 초상화의 현실성을 점진적으로 높이기 위한 다단계 destylization 기법을 제안함.
 <br/><br/>
 * **Stage I: Latent initialization**
-    * 초상화 $$S$$는 먼저 StyleGAN 잠재 공간(latent space)로 인코더 $$E$$에 의해 임베딩됨. 여기서, pSp 인코더를 사용하고 FFHQ 얼굴들을 $$\mathcal{Z}+$$ 공간으로 임베딩하도록 수정하는데, 이것은 [34]에 제안된 것처럼 원래 $$\mathcal{W}+$$ 공간보다 얼굴과 무관한 배경 디테일 및 왜곡된 모양에 더 강인함.
+    * 초상화 $$S$$는 먼저 StyleGAN 잠재 공간(latent space)로 인코더 $$E$$에 의해 임베딩됨. 여기서, pSp 인코더를 사용하고 FFHQ 얼굴들을 $$\mathcal{Z}+$$ 공간으로 임베딩하도록 수정하는데, 이것은 [AgileGAN]에 제안된 것처럼 원래 $$\mathcal{W}+$$ 공간보다 얼굴과 무관한 배경 디테일 및 왜곡된 모양에 더 강인함.
     * 재구축된 얼굴 $$g \left( \mathbf{z}_e^+ \right)$$의 예시가 [그림 3(b)](#Fig3)에 보이는데, $$g$$는 FFHQ에서 사전  트레이닝된 StyleGAN이고 $$\mathbf{z}_e^+ = E \left( S \right) \in \mathbb{R}^{18 \times 512}$$는 잠재 코드(latent code)임. $$E$$가 실제 얼굴로 트레이닝되었음에도, $$E \left( S \right) $$는 초상화 $$S$$의 색과 구조를 잘 캡처함.
 <br/><br/>
 * **Stage II: Latent optimization**
@@ -161,7 +161,7 @@ Project Page: [Github]
 * **단계 II: 소스 도메인에서의 구조 전송**
     * 이 단계는 소스 도메인에서 DualStyleGAN을 fine-tuning 하여 중간 레벨의 스타일을 캡처하고 전송하기 위해 외부 스타일 경로를 완전히 트레이닝시키는 것을 목표로 함.
     * 중간 레벨에서 StyleGAN의 스타일 혼합은 메이크업과 같은 소규모 스타일 전송을 포함하므로 DualStyleGAN에게 효과적인 지도를 제공함.
-    * 단계 II에서 우리는 랜덤 잠재 코드 $$\mathbf{z}_1$$과 $$\mathbf{z}_2$$를 그리고 $$G \left( \mathbf{z}_1 , \tilde{\mathbf{z}}_2 , \mathbf{1} \right)$$를 perceptual loss가 있는 스타일 혼합 타깃 $$g \left( \mathbf{z}_l^+ \right)$$에 근사하고자 하며, 여기서 $$\tilde{\mathbf{z}}_2$$는 $$\{ \mathbf{z}_2 , E \left( g \left( \mathbf{z}_2 \right) \right) \}$$에서 샘플링되고, $$l$$은 스타일 혼합이 발생하는 레이어이고 $$\mathbf{z}_l^+ \in \mathcal{Z}+$$는 l 벡터 $$\mathbf{z}_1$$과 $$\left( 18 - l \right)$$ 벡터 $$\mathbf{z}_2$$의 결합임.
+    * 단계 II에서 우리는 랜덤 잠재 코드 $$\mathbf{z}_1$$과 $$\mathbf{z}_2$$를 그리고 $$G \left( \mathbf{z}_1 , \tilde{\mathbf{z}}_2 , \mathbf{1} \right)$$를 perceptual loss로 스타일 혼합 타깃 $$g \left( \mathbf{z}_l^+ \right)$$에 근사하고자 하며, 여기서 $$\tilde{\mathbf{z}}_2$$는 $$\{ \mathbf{z}_2 , E \left( g \left( \mathbf{z}_2 \right) \right) \}$$에서 샘플링되고, $$l$$은 스타일 혼합이 발생하는 레이어이고 $$\mathbf{z}_l^+ \in \mathcal{Z}+$$는 $$l$$ 벡터 $$\mathbf{z}_1$$과 $$\left( 18 - l \right)$$ 벡터 $$\mathbf{z}_2$$의 결합임.
     * 다음과 같은 objective를 가진 fine-tuning 동안 $$l$$을 7에서 5로 점진적으로 감소시킴:
     <br/><br/>
     <div id="Eq2"></div>
@@ -169,7 +169,7 @@ Project Page: [Github]
     <br/><br/>
     여기서 $$\mathcal{L}_\mathrm{adv}$$는 StyleGAN 적대적 손실임.
     * $$l$$을 감소시킴으로써, $$g \left( \mathbf{z}_l^+ \right)$$는 $$\tilde{\mathbf{z}}_2$$로부터 더 많은 구조적 스타일을 가지게 될 것임.
-    * 그래서, 외부 스타일 경로는 색에 비해 더 많은 구조적 스타일을 캡처하고 전송하기 위해 학습하게 될 것임.
+    * 그래서, 외부 스타일 경로는 색 이외에도 더 많은 구조적 스타일을 캡처하고 전송하기 위해 학습하게 될 것임.
 * **단계 III: 타깃 도메인에서 스타일 전송**
     * 마지막으로, 타깃 도메인에서 DualStyleGAN을 fine-tuning 함. 예시 초상화 $$S$$의 스타일 코드 $$\mathbf{z}_i^+$$와 $$\mathbf{z}_e^+$$가 $$\mathcal{L}_{\mathrm{perc}}\left( G \left( \mathbf{z}_i^+ , \mathbf{z}_e^+ , \mathrm{1} \right) , S \right)$$로 $$S$$를 재구축하도록 함.
     * 표준 예시 기반 스타일 전송 패러다임에서처럼, 랜덤 내부 스타일 코드 $$\mathrm{z}$$에 대해, 다음 스타일 loss를 적용하는데,
@@ -358,3 +358,4 @@ Project Page: [Github]
 
 [Pastiche Master: Exemplar-Based High-Resolution Portrait Style Transfer]: https://openaccess.thecvf.com/content/CVPR2022/html/Yang_Pastiche_Master_Exemplar-Based_High-Resolution_Portrait_Style_Transfer_CVPR_2022_paper.html
 [Github]: https://github.com/williamyang1991/DualStyleGAN
+[AgileGAN]: https://dl.acm.org/doi/abs/10.1145/3450626.3459771
