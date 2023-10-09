@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[ChatGPT에게 물었다] 나만의 챗봇을 만드는 방법은?"
-date:   2023-08-24 12:12:00 +0900
+date:   2023-09-22 12:12:00 +0900
 categories: [ChatGPT's Answers]
 tags: [ChatGPT, Language Model, Chatbot]
 use_math: true
